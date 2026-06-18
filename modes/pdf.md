@@ -10,7 +10,7 @@
    - US/Canada → `letter`
    - Rest of the world → `a4`
 6. Detect role archetype → adapt framing
-7. Rewrite Professional Summary by injecting JD keywords + exit narrative bridge ("Built and sold a business. Now applying systems thinking to [JD domain].")
+7. Rewrite Professional Summary using the **two-pass method** below (see § Summary Rewrite Rules)
 8. Select top 3-4 most relevant projects for the job
 9. Reorder experience bullets by JD relevance
 10. Build competency grid from JD requirements (6-8 keyword phrases)
@@ -20,6 +20,56 @@
 14. Write HTML to `/tmp/cv-{candidate}-{company}.html`
 15. Execute: `node generate-pdf.mjs /tmp/cv-{candidate}-{company}.html output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4}`
 16. Report: PDF path, number of pages, keyword coverage %
+
+## Summary Rewrite Rules (two-pass method)
+
+Step 7 uses a two-pass process so the base-CV quality rules are applied first, then JD-specific keywords are layered on top. This prevents keyword injection from reintroducing vagueness into a previously optimized summary.
+
+### Pass 1 — Quality baseline (apply regardless of JD)
+
+Before touching JD keywords, the summary must pass these checks. Fix any failures inline:
+
+| Check | Requirement |
+|-------|------------|
+| Structure | Contains: target title, years of experience, 2-3 core competencies, 1-2 quantified achievements |
+| Quantification | Every achievement has a real number from `cv.md` or `article-digest.md` — never approximate |
+| Third person | No "I", "my", "me", "we" — rewrite as distanced factual statements |
+| Length | 2-4 sentences, max 30 words per sentence |
+| No buzzwords | Remove: "hardworking", "team player", "proven track record", "results-oriented", "leveraged", "spearheaded", "passionate about", "synergies", "cutting-edge", "go-getter", "detail-oriented", "dynamic", "apaixonado por", "orientado a resultados", "proativo", "dinâmico" |
+| Show don't tell | Each claim must pass the test: *"Could this appear in any other candidate's CV?"* If yes, rewrite with specific evidence |
+| North Star alignment | First sentence immediately signals the target archetype from `_profile.md` |
+
+If `output/resume-summaries.md` exists, use it as the Pass 1 baseline instead of rewriting from scratch:
+
+1. Read `output/resume-summaries.md`
+2. Match the JD archetype (detected in Step 6 of the main pipeline) to the variant guidance:
+   - **Variante A** (Builder/Founder) → vagas de 0-to-1, startups early-stage, Founder/CPO, Head of Product com DNA builder
+   - **Variante B** (Technical PM) → vagas de Technical PM, AI PM, engenharia-heavy, squads de produto técnico
+   - **Variante C** (Business Impact) → vagas de Senior PM SaaS B2B, growth, GTM, empresas orientadas a métricas
+3. Select the matching variant as the Pass 1 base text
+4. Inform the user: "Usando Variante {X} como base do resumo para esta vaga."
+5. Proceed to Pass 2 (JD keyword injection) on top of the selected variant
+
+If `output/resume-summaries.md` does not exist, rewrite from scratch following the rules below.
+
+### Pass 2 — JD keyword injection
+
+After Pass 1 produces a quality baseline, inject JD-specific keywords:
+
+- Insert the top 3-5 JD keywords naturally into the existing 2-4 sentence structure
+- Mirror the JD's exact vocabulary for the role's core domain (e.g., if JD says "conversational AI", use "conversational AI" not "chatbots")
+- Add the exit narrative bridge only when it adds genuine signal for this specific role: "Built and shipped [product domain] from zero. Now bringing that same [relevant skill] to [JD company/domain]."
+- The bridge is optional — skip it if the candidate's background already clearly maps to the role without explanation
+- After injection, re-verify the Pass 1 checklist still holds — keyword insertion must not reintroduce buzzwords or push the summary past 4 sentences
+
+### What NOT to do in Pass 2
+
+- Never add skills or technologies the candidate doesn't have
+- Never change real numbers from Pass 1
+- Never make the summary longer than 4 sentences to fit more keywords — cut a sentence if needed
+- Never replace a specific proof point with a vague keyword claim
+
+---
 
 ## ATS Rules (clean parsing)
 
@@ -63,7 +113,7 @@ Examples of legitimate reformulation:
 
 ## Template HTML
 
-Use the template in `cv-template.html`. Replace the `{{...}}` placeholders with personalized content:
+Use the template in `cv-template-flat.html`. Replace the `{{...}}` placeholders with personalized content:
 
 | Placeholder | Content |
 |-------------|-----------|

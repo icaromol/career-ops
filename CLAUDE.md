@@ -244,6 +244,7 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 | Batch processes offers | `batch` |
 | Asks about rejection patterns or wants to improve targeting | `patterns` |
 | Asks about follow-ups or application cadence | `followup` |
+| Wants to build the Idiomas (languages) section of cv.md | `languages` |
 
 ### CV Source of Truth
 

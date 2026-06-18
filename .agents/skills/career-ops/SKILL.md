@@ -4,7 +4,7 @@ description: AI job search command center -- evaluate offers, generate CVs, scan
 arguments: mode
 user_invocable: true
 user-invocable: true
-argument-hint: "[scan | deep | pdf | latex | cover | oferta | ofertas | apply | batch | tracker | pipeline | contacto | training | project | interview-prep | interview | patterns | followup | update]"
+argument-hint: "[scan | deep | pdf | latex | cover | oferta | ofertas | apply | batch | tracker | pipeline | contacto | training | project | interview-prep | interview | patterns | followup | update | resume-analyze | resume-optimize | resume-update | experience-analyze | experience-optimize | languages]"
 license: MIT
 ---
 
@@ -37,6 +37,12 @@ Determine the mode from `$mode`:
 | `followup` | `followup` |
 | `update` | `update` |
 | `cover` | `cover` |
+| `resume-analyze` | `resume-analyze` |
+| `resume-optimize` | `resume-optimize` |
+| `resume-update` | `resume-update` |
+| `experience-analyze` | `experience-analyze` |
+| `experience-optimize` | `experience-optimize` |
+| `languages` | `languages` |
 
 **Auto-pipeline detection:** If `$mode` is not a known sub-command AND contains JD text (keywords: "responsibilities", "requirements", "qualifications", "about the role", "we're looking for", company name + role) or a URL to a JD, execute `auto-pipeline`.
 
@@ -72,6 +78,12 @@ Available commands:
   /career-ops patterns  → Analyze rejection patterns and improve targeting
   /career-ops followup  → Follow-up cadence tracker: flag overdue, generate drafts
   /career-ops update    → Update career-ops system files with diff preview + compat check
+  /career-ops resume-analyze       → Score Professional Summary against 9 research-backed criteria, save report
+  /career-ops resume-optimize      → Rewrite base CV summary (3 variants), apply to cv.md after approval
+  /career-ops resume-update        → Update cv.md by pasting new content: shows diff + requires confirmation
+  /career-ops experience-analyze   → Score Work Experience section: 6 dimensions + keyword gap (optional JD)
+  /career-ops experience-optimize  → Rewrite bullets: discovery loop for missing metrics, saves to article-digest
+  /career-ops languages            → Build your Idiomas section for cv.md: discovery + CEFR levels + insert
 
 Inbox: add URLs to data/pipeline.md → /career-ops pipeline
 Or paste a JD directly to run the full pipeline.
@@ -91,7 +103,7 @@ Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `contacto`, `apply`, `p
 ### Standalone modes (only their mode file):
 Read `modes/{mode}.md`
 
-Applies to: `tracker`, `deep`, `interview-prep`, `interview`, `latex`, `training`, `project`, `patterns`, `followup`, `cover`
+Applies to: `tracker`, `deep`, `interview-prep`, `interview`, `latex`, `training`, `project`, `patterns`, `followup`, `cover`, `resume-analyze`, `resume-optimize`, `resume-update`, `experience-analyze`, `experience-optimize`, `languages`
 
 ### Modes delegated to subagent:
 For `scan`, `apply` (with Playwright), and `pipeline` (3+ URLs): launch as Agent with the content of `_shared.md` + `modes/{mode}.md` injected into the subagent prompt.

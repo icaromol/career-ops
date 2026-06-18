@@ -13,13 +13,13 @@
 | File | Path | When |
 |------|------|------|
 | cv.md | `cv.md` (project root) | ALWAYS |
-| article-digest.md | `article-digest.md` (if exists) | ALWAYS (detailed proof points) |
-| profile.yml | `config/profile.yml` | ALWAYS (candidate identity and targets) |
+| article-digest.md | `article-digest.md` (if exists) | Proof points — use if present; see fallback rule below |
+| profile.yml | `config/profile.yml` | ALWAYS (candidate identity, targets, and proof points) |
 | _profile.md | `modes/_profile.md` | ALWAYS (user archetypes, narrative, negotiation) |
 | writing-samples/ | `writing-samples/` | When generating candidate-facing text — check `_profile.md` for cached `## Writing Style` first; only scan files if absent |
 
-**RULE: NEVER hardcode metrics from proof points.** Read them from cv.md + article-digest.md at evaluation time.
-**RULE: For article/project metrics, article-digest.md takes precedence over cv.md.**
+**RULE: NEVER hardcode metrics from proof points.** Read them from cv.md + proof points source at evaluation time.
+**RULE: Proof points source priority:** (1) `article-digest.md` if it exists, (2) `config/profile.yml` under `proof_points` section. Both may coexist; article-digest takes precedence where it has entries.
 **RULE: Read _profile.md AFTER this file. User customizations in _profile.md override defaults here.**
 
 ---
