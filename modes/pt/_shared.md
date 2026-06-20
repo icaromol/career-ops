@@ -212,7 +212,7 @@ Em vagas e negociações brasileiras, existem termos e práticas que não aparec
 | WebSearch | Pesquisa de remuneração, tendências, cultura da empresa, contatos LinkedIn, fallback para descrições de vagas |
 | WebFetch | Fallback para extrair descrições de vagas de páginas estáticas |
 | Playwright | Verificar se vagas ainda estão ativas (browser_navigate + browser_snapshot), extrair descrições de SPAs. **CRÍTICO: NUNCA iniciar 2+ agentes com Playwright em paralelo — eles compartilham a mesma instância do navegador** |
-| Read | cv.md, _profile.md, article-digest.md, cv-template.html |
+| Read | cv.md, _profile.md, article-digest.md, cv-template-flat.html |
 | Write | HTML temporário para PDF, reports .md, TSV em `batch/tracker-additions/` |
 | Edit | Ajustes de conteúdo (não usar para criar novos registros no tracker) |
 | Bash | `node generate-pdf.mjs`, `node merge-tracker.mjs` |

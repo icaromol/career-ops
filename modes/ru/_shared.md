@@ -179,7 +179,7 @@
 | WebSearch | Исследование компенсации, тренды, культура компании, контакты в LinkedIn, fallback для JD |
 | WebFetch | Fallback для извлечения JD со статических страниц |
 | Playwright | Верификация вакансий (browser_navigate + browser_snapshot). **НИКОГДА 2+ агентов с Playwright параллельно.** |
-| Read | cv.md, _profile.md, article-digest.md, cv-template.html |
+| Read | cv.md, _profile.md, article-digest.md, cv-template-flat.html |
 | Write | Временный HTML для PDF, data/applications.md, отчёты .md |
 | Edit | Обновление трекера |
 | Bash | `node generate-pdf.mjs` |

@@ -227,7 +227,7 @@
 | WebSearch  | Дослідження компенсації, тренди, культура компанії, контакти в LinkedIn, fallback для JD                                                             |
 | WebFetch   | Fallback для отримання JD зі статичних сторінок                                                                                                      |
 | Playwright | Верифікація вакансій (browser_navigate + browser_snapshot). **НІКОЛИ 2+ агентів з Playwright паралельно.**                                           |
-| Read       | cv.md, \_profile.md, article-digest.md, cv-template.html                                                                                             |
+| Read       | cv.md, \_profile.md, article-digest.md, cv-template-flat.html                                                                                             |
 | Write      | Тимчасовий HTML для PDF, data/applications.md, звіти .md                                                                                             |
 | Edit       | Оновлення трекера                                                                                                                                    |
 | Canva MCP  | Опціональна генерація візуального CV. Дублювати базовий дизайн, редагувати текст, експортувати PDF. Потребує `canva_resume_design_id` в profile.yml. |

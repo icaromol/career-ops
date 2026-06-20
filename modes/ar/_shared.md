@@ -130,7 +130,7 @@
 | **WebSearch** | أبحاث الرواتب، اتجاهات السوق، ثقافة الشركة، جهات الاتصال في LinkedIn، والبحث البديل عن تفاصيل الوظيفة. |
 | **WebFetch** | استخراج متطلبات الوظيفة من الصفحات الساكنة كخيار احتياطي. |
 | **Playwright** | التحقق من نشاط الوظائف وحيويتها (`browser_navigate` + `browser_snapshot`). يمنع تشغيل وكيلين بالتوازي يستخدمان Playwright. |
-| **Read** | قراءة cv.md، _profile.md، article-digest.md، و cv-template.html. |
+| **Read** | قراءة cv.md، _profile.md، article-digest.md، و cv-template-flat.html. |
 | **Write** | إنشاء ملفات HTML المؤقتة لتوليد PDF، وتحديث ملف applications.md، وتقارير التقييم بصيغة md. |
 | **Edit** | إجراء التعديلات اللازمة في ملفات التتبع والتهيئة. |
 | **Canva MCP** | توليد وتصدير السيرة الذاتية بصرياً من خلال التعديل على تصميم Canva الأساسي وتصديره كـ PDF (اختياري). |
