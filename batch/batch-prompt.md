@@ -20,7 +20,7 @@ Eres un worker de evaluación de ofertas de empleo for the candidate (read name 
 | llms.txt | `llms.txt (if exists)` | SIEMPRE |
 | article-digest.md | `article-digest.md (project root)` | SIEMPRE (proof points) |
 | i18n.ts | `i18n.ts (if exists, optional)` | Solo entrevistas/deep |
-| cv-template.html | `templates/cv-template.html` | Para PDF |
+| cv-template-flat.html | `templates/cv-template-flat.html` | Para PDF |
 | generate-pdf.mjs | `generate-pdf.mjs` | Para PDF |
 
 **REGLA: NUNCA escribir en cv.md ni i18n.ts.** Son read-only.
@@ -303,9 +303,8 @@ next_action: "{one concrete next step}"
 6. Reescribe Professional Summary inyectando keywords
 7. Selecciona top 3-4 proyectos más relevantes
 8. Reordena bullets de experiencia por relevancia al JD
-9. Construye competency grid (6-8 keyword phrases)
-10. Inyecta keywords en logros existentes (**NUNCA inventa**)
-11. Genera HTML completo desde template (lee `templates/cv-template.html`)
+9. Inyecta keywords en logros existentes (**NUNCA inventa**)
+11. Genera HTML completo desde template (lee `templates/cv-template-flat.html`)
 12. Escribe HTML a `/tmp/cv-candidate-{company-slug}.html`
 13. Ejecuta:
 ```bash
@@ -356,8 +355,6 @@ On success, in Paso 5 use `pdf_emoji` = `✅` and in Paso 6 set `"pdf"` to the o
 | `{{LOCATION}}` | (from profile.yml) |
 | `{{SECTION_SUMMARY}}` | Professional Summary / Resumen Profesional |
 | `{{SUMMARY_TEXT}}` | Summary personalizado con keywords |
-| `{{SECTION_COMPETENCIES}}` | Core Competencies / Competencias Core |
-| `{{COMPETENCIES}}` | `<span class="competency-tag">keyword</span>` × 6-8 |
 | `{{SECTION_EXPERIENCE}}` | Work Experience / Experiencia Laboral |
 | `{{EXPERIENCE}}` | HTML de cada trabajo con bullets reordenados |
 | `{{SECTION_PROJECTS}}` | Projects / Proyectos |
@@ -389,7 +386,7 @@ Formato TSV (una sola línea, sin header, 9 columnas tab-separated):
 | 2 | date | YYYY-MM-DD | `2026-03-14` | Fecha de evaluación |
 | 3 | company | string | `Datadog` | Nombre corto de empresa |
 | 4 | role | string | `Staff AI Engineer` | Título del rol |
-| 5 | status | canonical | `Evaluada` | DEBE ser canónico (ver states.yml) |
+| 5 | status | canonical | `Evaluated` | DEBE ser canónico (ver states.yml) |
 | 6 | score | X.XX/5 | `4.55/5` | O `N/A` si no evaluable |
 | 7 | pdf | emoji | `✅` o `❌` | Si se generó PDF |
 | 8 | report | md link | `[647](reports/647-...)` | Link root-relative; merge-tracker.mjs lo normaliza relativo al tracker (ej. `../reports/...`, #760) |
@@ -397,7 +394,7 @@ Formato TSV (una sola línea, sin header, 9 columnas tab-separated):
 
 **IMPORTANTE:** El orden TSV tiene status ANTES de score (col 5→status, col 6→score). En applications.md el orden es inverso (col 5→score, col 6→status). merge-tracker.mjs maneja la conversión.
 
-**Estados canónicos válidos:** `Evaluada`, `Aplicado`, `Respondido`, `Entrevista`, `Oferta`, `Rechazado`, `Descartado`, `NO APLICAR`
+**Estados canónicos válidos:** `Evaluated`, `Applied`, `Responded`, `Interview`, `Offer`, `Rejected`, `Discarded`, `SKIP`
 
 Donde `{next_num}` se calcula leyendo la última línea de `data/applications.md`.
 
@@ -446,6 +443,7 @@ Si algo falla:
 4. Recomendar comp por debajo de mercado
 5. Generar PDF sin leer primero el JD
 6. Usar corporate-speak
+7. **Crear ni modificar `batch/batch-input.tsv` ni ningún archivo `batch/batch-input-*.tsv`.** El worker solo escribe en `reports/`, `output/`, y `batch/tracker-additions/`. Cualquier otro archivo en `batch/` es read-only para el worker.
 
 ### SIEMPRE
 1. Leer cv.md, llms.txt y article-digest.md antes de evaluar
