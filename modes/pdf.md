@@ -13,13 +13,12 @@
 7. Rewrite Professional Summary by injecting JD keywords + exit narrative bridge ("Built and sold a business. Now applying systems thinking to [JD domain].")
 8. Select top 3-4 most relevant projects for the job
 9. Reorder experience bullets by JD relevance
-10. Build competency grid from JD requirements (6-8 keyword phrases)
-11. Inject keywords naturally into existing achievements (NEVER invent)
-12. Generate full HTML from template + personalized content
-13. Read `name` from `config/profile.yml` → normalize to kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
-14. Write HTML to `/tmp/cv-{candidate}-{company}.html`
-15. Execute: `node generate-pdf.mjs /tmp/cv-{candidate}-{company}.html output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4}`
-16. Report: PDF path, number of pages, keyword coverage %
+10. Inject keywords naturally into existing achievements (NEVER invent)
+11. Generate full HTML from template + personalized content
+12. Read `name` from `config/profile.yml` → normalize to kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
+13. Write HTML to `/tmp/cv-{candidate}-{company}.html`
+14. Execute: `node generate-pdf.mjs /tmp/cv-{candidate}-{company}.html output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4}`
+15. Report: PDF path, number of pages, keyword coverage %
 
 ## ATS Rules (clean parsing)
 
@@ -46,11 +45,10 @@
 
 1. Header (large name, gradient, contact, portfolio link)
 2. Professional Summary (3-4 lines, keyword-dense)
-3. Core Competencies (6-8 keyword phrases in flex-grid)
-4. Work Experience (reverse chronological)
-5. Projects (top 3-4 most relevant)
-6. Education & Certifications
-7. Skills (languages + technical)
+3. Work Experience (reverse chronological)
+4. Projects (top 3-4 most relevant)
+5. Education & Certifications
+6. Skills (languages + technical)
 
 ## Keyword injection strategy (ethical, truth-based)
 
@@ -79,8 +77,6 @@ Use the template in `cv-template-flat.html`. Replace the `{{...}}` placeholders 
 | `{{LOCATION}}` | [from profile.yml] |
 | `{{SECTION_SUMMARY}}` | Professional Summary |
 | `{{SUMMARY_TEXT}}` | Personalized summary with keywords |
-| `{{SECTION_COMPETENCIES}}` | Core Competencies |
-| `{{COMPETENCIES}}` | `<span class="competency-tag">keyword</span>` × 6-8 |
 | `{{SECTION_EXPERIENCE}}` | Work Experience |
 | `{{EXPERIENCE}}` | HTML for each job with reordered bullets |
 | `{{SECTION_PROJECTS}}` | Projects |
