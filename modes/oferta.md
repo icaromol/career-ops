@@ -15,6 +15,23 @@ When the candidate pastes a **URL** (not JD text), confirm the posting is still 
 
 Do not continue to Block A until this gate is resolved. The snapshot captured here is reused by Block G's freshness signals.
 
+## Step 0.5 — JD Fetch via API (Greenhouse / Ashby)
+
+Before archetype detection, check if the URL belongs to a supported ATS platform with a public API:
+- `job-boards.greenhouse.io`, `boards.greenhouse.io`, `job-boards.eu.greenhouse.io` (Anthropic, PlayStation, Life360, Reddit, and others)
+- `jobs.ashbyhq.com` (Decagon and others)
+
+If yes, run:
+```bash
+node fetch-jd.mjs <url>
+```
+
+- If the result contains a `description` field: use it as the JD for all blocks A-G. Mark the report header with `**Verification:** confirmed (Greenhouse API)` or `confirmed (Ashby API)`. Skip or abbreviate the Playwright navigation from the Liveness gate.
+- If the result contains `"error": "job-not-found"`: the posting is dead — stop before Block A, same as the liveness gate rule.
+- If the result contains any other `error` (timeout, empty-description, unsupported-platform): fall back to the Playwright snapshot from the Liveness gate.
+
+For all other URLs (Google, Microsoft, Meta, LinkedIn, etc.): skip this step entirely and use the Playwright snapshot.
+
 ## Step 0 — Archetype Detection
 
 Classify the job into one of the 6 archetypes (see `_shared.md`). If it is a hybrid, indicate the 2 closest ones. This determines:
