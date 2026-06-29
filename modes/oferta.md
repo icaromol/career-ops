@@ -15,22 +15,36 @@ When the candidate pastes a **URL** (not JD text), confirm the posting is still 
 
 Do not continue to Block A until this gate is resolved. The snapshot captured here is reused by Block G's freshness signals.
 
-## Step 0.5 — JD Fetch via API (Greenhouse / Ashby)
+## Step 0.5 — JD Fetch via API or Playwright
 
-Before archetype detection, check if the URL belongs to a supported ATS platform with a public API:
+Before archetype detection, run `fetch-jd.mjs` for any of these supported platforms:
+
+**API-based (zero browser, instant):**
 - `job-boards.greenhouse.io`, `boards.greenhouse.io`, `job-boards.eu.greenhouse.io` (Anthropic, PlayStation, Life360, Reddit, and others)
 - `jobs.ashbyhq.com` (Decagon and others)
 
-If yes, run:
+**Playwright-based (headless browser, ~25s):**
+- `www.google.com/about/careers` (Google Careers SPA)
+- `jobs.microsoft.com` (Microsoft Jobs SPA)
+- `metacareers.com` (Meta Careers — login wall likely, see below)
+
+Run:
 ```bash
 node fetch-jd.mjs <url>
 ```
 
-- If the result contains a `description` field: use it as the JD for all blocks A-G. Mark the report header with `**Verification:** confirmed (Greenhouse API)` or `confirmed (Ashby API)`. Skip or abbreviate the Playwright navigation from the Liveness gate.
-- If the result contains `"error": "job-not-found"`: the posting is dead — stop before Block A, same as the liveness gate rule.
-- If the result contains any other `error` (timeout, empty-description, unsupported-platform): fall back to the Playwright snapshot from the Liveness gate.
+**Interpreting the result:**
+- `description` field present: use it as the JD for all blocks A-G. Mark the report header:
+  - `**Verification:** confirmed (Greenhouse API)` for Greenhouse URLs
+  - `**Verification:** confirmed (Ashby API)` for Ashby URLs
+  - `**Verification:** confirmed (Playwright)` for Google/Microsoft
+  Skip or abbreviate the Playwright navigation from the Liveness gate.
+- `"error": "job-not-found"`: posting is dead — stop before Block A, same as the liveness gate rule.
+- `"error": "login-required"`: Meta's login wall blocked the JD. Fall back to Playwright snapshot; mark `**Verification:** unconfirmed (login wall)` in the report.
+- `"error": "jd-not-found"`: page loaded but JD markers were absent (role may have changed structure). Fall back to Playwright snapshot.
+- Any other `error` (timeout, network-error, empty-description, unsupported-platform): fall back to the Playwright snapshot from the Liveness gate.
 
-For all other URLs (Google, Microsoft, Meta, LinkedIn, etc.): skip this step entirely and use the Playwright snapshot.
+For all other URLs (LinkedIn, Lever, Workday, etc.): skip this step entirely and use the Playwright snapshot.
 
 ## Step 0 — Archetype Detection
 

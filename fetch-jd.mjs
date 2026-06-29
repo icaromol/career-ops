@@ -5,10 +5,14 @@
 // stderr: errors only
 
 import { pathToFileURL } from 'url';
+import { chromium } from 'playwright';
+import { newLivenessPage, rejectPrivateOrInvalid } from './liveness-browser.mjs';
 
 const TIMEOUT_MS = 15_000;
 const ASHBY_TIMEOUT_MS = 30_000;
 const ASHBY_RETRIES = 2;
+const PLAYWRIGHT_TIMEOUT_MS = 20_000;
+const PLAYWRIGHT_SETTLE_MS = 3_000;
 const UA = 'Mozilla/5.0 (compatible; career-ops/1.3)';
 
 async function httpGet(url, { timeoutMs = TIMEOUT_MS } = {}) {
@@ -82,6 +86,22 @@ const GREENHOUSE_COMPANY_NAMES = {
   reddit: 'Reddit',
 };
 
+// Signals that indicate the page has a JD body to extract, by platform
+const PLATFORM_MARKERS = {
+  google:    ['Minimum qualifications', 'Preferred qualifications', 'About the job', 'Responsibilities'],
+  microsoft: ['Responsibilities', 'Qualifications', 'Required qualifications', 'Overview'],
+  meta:      ['Responsibilities', 'Minimum Qualifications', 'Preferred Qualifications'],
+};
+
+// Signals that indicate a login wall is blocking the JD, by platform
+const LOGIN_SIGNALS = {
+  google:    ['Sign in to Google'],
+  microsoft: ['Sign in', 'login.microsoftonline.com'],
+  meta:      ['Log in to Facebook', 'Create new account'],
+};
+
+const PLATFORM_COMPANY = { google: 'Google', microsoft: 'Microsoft', meta: 'Meta' };
+
 function detectPlatform(rawUrl) {
   let u;
   try { u = new URL(rawUrl); } catch { return { type: 'unsupported', url: rawUrl }; }
@@ -112,7 +132,94 @@ function detectPlatform(rawUrl) {
     return { type: 'unsupported', url: rawUrl, hint: 'remotepmjobs URL: could not extract Reddit job ID' };
   }
 
+  // Google Careers SPA
+  if (host === 'www.google.com' && parts[0] === 'about' && parts[1] === 'careers') {
+    return { type: 'playwright', platform: 'google', url: rawUrl };
+  }
+
+  // Microsoft Jobs SPA
+  if (host === 'jobs.microsoft.com' && parts[1] === 'job' && parts[2]) {
+    return { type: 'playwright', platform: 'microsoft', url: rawUrl };
+  }
+
+  // Meta Careers (login wall likely — partial support)
+  if (host === 'www.metacareers.com' || host === 'metacareers.com') {
+    return { type: 'playwright', platform: 'meta', url: rawUrl };
+  }
+
   return { type: 'unsupported', url: rawUrl };
+}
+
+function extractJd(platform, bodyText, url) {
+  const markers = PLATFORM_MARKERS[platform] || [];
+  const loginSignals = LOGIN_SIGNALS[platform] || [];
+  const hasJdMarker = markers.some(m => bodyText.includes(m));
+
+  // Detect login wall: login signal present and no JD marker found
+  if (!hasJdMarker && loginSignals.some(s => bodyText.includes(s))) {
+    return { error: 'login-required', platform, url };
+  }
+
+  // Find earliest JD section marker
+  let startIdx = -1;
+  for (const marker of markers) {
+    const idx = bodyText.indexOf(marker);
+    if (idx !== -1 && (startIdx === -1 || idx < startIdx)) startIdx = idx;
+  }
+
+  if (startIdx === -1) {
+    return { error: 'jd-not-found', platform, url };
+  }
+
+  const description = bodyText.slice(startIdx).replace(/\n{3,}/g, '\n\n').trim();
+
+  // Title extraction — platform-specific anchors (innerText structure varies per SPA):
+  // Google: job title appears just before "\nshare\ncorporate_fare" (Material icon labels in sidebar card)
+  // Microsoft/Meta: title is in the first ~20 lines of the body before the JD section
+  let title = '';
+  if (platform === 'google') {
+    const googleAnchor = bodyText.indexOf('\nshare\ncorporate_fare');
+    if (googleAnchor !== -1) {
+      const beforeAnchor = bodyText.slice(0, googleAnchor);
+      const lines = beforeAnchor.split('\n');
+      title = lines[lines.length - 1]?.trim() || '';
+    }
+  }
+  if (!title) {
+    const preamble = bodyText.slice(0, startIdx);
+    const preambleLines = preamble.split('\n').map(l => l.trim()).filter(l => l.length > 8 && l.length < 120);
+    title = preambleLines[preambleLines.length - 1] || bodyText.split('\n').find(l => {
+      const t = l.trim();
+      return t.length > 8 && t.length < 120;
+    }) || '';
+  }
+
+  return {
+    title: title.trim(),
+    company: PLATFORM_COMPANY[platform] || platform,
+    location: '',
+    description,
+    source: `playwright-${platform}`,
+    url,
+  };
+}
+
+async function fetchWithPlaywright({ platform, url }) {
+  const guard = rejectPrivateOrInvalid(url);
+  if (guard) throw Object.assign(new Error(guard.reason), { status: 400 });
+
+  const browser = await chromium.launch({ headless: true });
+  try {
+    // newLivenessPage sets anti-bot UA (Macintosh Chrome/120) + en-US locale
+    const page = await newLivenessPage(browser);
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: PLAYWRIGHT_TIMEOUT_MS });
+    // Wait for SPA hydration (React/Next.js render cycle)
+    await page.waitForTimeout(PLAYWRIGHT_SETTLE_MS);
+    const bodyText = await page.evaluate(() => document.body?.innerText ?? '');
+    return extractJd(platform, bodyText, url);
+  } finally {
+    await browser.close();
+  }
 }
 
 async function fetchGreenhouse({ slug, jobId, url }) {
@@ -178,6 +285,8 @@ async function main() {
     result = await fetchGreenhouse(platform);
   } else if (platform.type === 'ashby') {
     result = await fetchAshby(platform);
+  } else if (platform.type === 'playwright') {
+    result = await fetchWithPlaywright(platform);
   } else {
     result = {
       error: 'unsupported-platform',
@@ -200,8 +309,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   main().catch(err => {
     if (err.status === 404 || err.status === 410) {
       process.stdout.write(JSON.stringify({ error: 'job-not-found', url: process.argv[2] }) + '\n');
-    } else if (err.name === 'AbortError' || err.name === 'TimeoutError') {
+    } else if (err.name === 'AbortError' || err.name === 'TimeoutError' || err.message?.includes('TimeoutError')) {
       process.stdout.write(JSON.stringify({ error: 'timeout', url: process.argv[2] }) + '\n');
+    } else if (err.message?.includes('ERR_NAME_NOT_RESOLVED') || err.message?.includes('ERR_CONNECTION_REFUSED') || err.message?.includes('ERR_NETWORK')) {
+      process.stdout.write(JSON.stringify({ error: 'network-error', message: err.message.split('\n')[0], url: process.argv[2] }) + '\n');
     } else {
       process.stderr.write(`fetch-jd error: ${err.message}\n`);
       process.exit(1);
