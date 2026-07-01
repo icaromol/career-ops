@@ -54,15 +54,21 @@ async function scrapeOnePage(page, url) {
       const locationEl = card.querySelector('span.r0wTof');
       const location = locationEl?.textContent?.trim() || '';
 
-      results.push({ title, jobId, location });
+      // Minimum qualifications: <div class="Xsxa1e"><h4>Minimum qualifications</h4><ul>...
+      // Already rendered inline on the search results card — no extra page load needed.
+      const qualsEl = card.querySelector('.Xsxa1e');
+      const description = qualsEl?.textContent?.trim() || '';
+
+      results.push({ title, jobId, location, description });
     }
 
     return results;
-  }).then(cards => cards.map(({ title, jobId, location }) => ({
+  }).then(cards => cards.map(({ title, jobId, location, description }) => ({
     title,
     url: `https://www.google.com/about/careers/applications/jobs/results/${jobId}-${titleToSlug(title)}`,
     company: 'Google',
     location,
+    description,
   })));
 }
 

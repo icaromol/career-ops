@@ -264,6 +264,8 @@ next_report_num_unlocked() {
       local basename
       basename=$(basename "$f")
       local num="${basename%%-*}"
+      # Skip files with non-numeric prefixes (e.g. cv-review-*, experience-*, resume-*)
+      [[ "$num" =~ ^[0-9]+$ ]] || continue
       num=$((10#$num)) # Remove leading zeros for arithmetic
       if (( num > max_num )); then
         max_num=$num
@@ -274,6 +276,8 @@ next_report_num_unlocked() {
   if [[ -f "$STATE_FILE" ]]; then
     while IFS=$'\t' read -r _ _ _ _ _ rnum _ _ _; do
       [[ "$rnum" == "report_num" || "$rnum" == "-" || -z "$rnum" ]] && continue
+      # Skip non-numeric values (malformed state file rows)
+      [[ "$rnum" =~ ^[0-9]+$ ]] || continue
       local n=$((10#$rnum))
       if (( n > max_num )); then
         max_num=$n

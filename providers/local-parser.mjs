@@ -152,6 +152,7 @@ function normalizeParserJob(job, entry) {
     url,
     company: String(job.company || entry.name || '').trim(),
     location: normalizeLocation(job.location || job.locations),
+    description: String(job.description || '').trim(),
   };
 }
 
