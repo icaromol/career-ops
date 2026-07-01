@@ -127,14 +127,14 @@ Sección de **gaps** con estrategia de mitigación para cada uno:
 
 #### Pre-Screen Gate (headless — auto only, never asks)
 
-No hay usuario presente en modo batch, así que este gate solo puede auto-skip o auto-proceed — nunca preguntar. Un buen candidato saltado por error es irrecuperable en modo headless (no hay revisión de sesión, a diferencia de `pipeline.md`), así que solo saltar ante la señal de más alta confianza, nunca ante un score fuzzy:
+No hay usuario presente en modo batch, así que este gate solo puede auto-skip o auto-proceed — nunca preguntar. Un buen candidato saltado por error es irrecuperable en modo headless (no hay revisión de sesión, a diferencia de `pipeline.md`), así que solo saltar ante la señal de más alta confianza, nunca ante un score fuzzy. Checks y arquetipo-fit son los mismos que en `modes/_shared.md` § Pre-Screen Gate (Quick Estimate) — esta sección solo declara el delta de comportamiento de batch mode:
 
 - **Skip** (no ejecutar Bloques C-G, no generar PDF): dispara una regla explícita de Deal-Breaker en `_profile.md`, O el Bloque B encuentra 2+ gaps hard-blocker en requisitos CORE/repetidos del JD donde el paso 4 del análisis de gaps ("plan de mitigación concreto") es honestamente "ninguno disponible" (no un plan débil — uno genuinamente ausente).
-- **En cualquier otro caso, proceder siempre** a los Bloques C-G, incluso con un score estimado borderline/fuzzy (3.5-3.9). No interpolar aquí un umbral de skip basado en score — ese juicio necesita un humano, y el modo batch no tiene ninguno presente.
+- **En cualquier otro caso, proceder siempre** a los Bloques C-G, incluso con un score estimado borderline/fuzzy (entre `prescreen_score_threshold` y `prescreen_ask_threshold`, leídos de `config/profile.yml` — ver `_shared.md`). No interpolar aquí un umbral de skip basado en score — ese juicio necesita un humano, y el modo batch no tiene ninguno presente.
 
 **Si se decide Skip:**
-- Igual escribir el report en Paso 3, pero abreviado: Bloque A + Bloque B (con la conclusión de gaps) + una nota de una línea explicando por qué se saltaron los Bloques C-G y el motivo. En el `Machine Summary`, usar `final_decision: "Skip"` y poblar `hard_stops` con los gaps/deal-breakers que dispararon el skip.
-- Igual escribir la línea TSV del Paso 5, con `status` = `SKIP` (ya es un estado canónico) — a diferencia de los caminos interactivo/pipeline, la línea TSV de un batch run es el único registro durable que el usuario verá para esta oferta, así que no puede omitirse silenciosamente.
+- Igual escribir el report en Paso 3, usando el formato abreviado descrito ahí ("Excepción para reports abreviados") — Bloque A + Bloque B (con la conclusión de gaps), Bloques C-G marcados `(omitido — Pre-Screen Gate...)`, `**Score:**`/`**Legitimacy:**`/`legitimacy_tier`/`score` en sus valores N/A definidos ahí. En el `Machine Summary`, usar `final_decision: "Skip"` y poblar `hard_stops` con los gaps/deal-breakers que dispararon el skip.
+- Igual escribir la línea TSV del Paso 5, con `status` = `SKIP` (ya es un estado canónico) y `score` = `N/A` — a diferencia de los caminos interactivo/pipeline, la línea TSV de un batch run es el único registro durable que el usuario verá para esta oferta, así que no puede omitirse silenciosamente.
 - Saltar el Paso 4 (PDF) por completo: `pdf_emoji` = `❌`, `"pdf": null` en el Paso 6.
 
 #### Bloque C — Nivel y Estrategia
@@ -291,6 +291,14 @@ next_action: "{one concrete next step}"
 ## Keywords extraídas
 (15-20 keywords del JD para ATS)
 ```
+
+**Excepción para reports abreviados (Pre-Screen Gate → Skip):** Bloques D y G nunca corrieron, así que `**Score:**`, `**Legitimacy:**`, y `legitimacy_tier` no tienen un valor real que reportar — nunca inventes uno. Usa exactamente:
+- `**Score:** N/A (pre-screened)`
+- `**Legitimacy:** N/A (pre-screened — Bloque G no ejecutado)`
+- `legitimacy_tier: null`
+- `score: null`
+
+Bloques C, D, E, F, G quedan como `(omitido — Pre-Screen Gate: ver nota abajo)` en vez de `(contenido completo)`. Esta es la ÚNICA excepción al formato de arriba; todo report que no pasó por un Skip del Pre-Screen Gate sigue el formato completo sin excepciones.
 
 ### Paso 4 — Generar PDF (configurable)
 

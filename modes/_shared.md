@@ -93,13 +93,15 @@ Before committing to the expensive parts of a full evaluation (Comp research, In
 
 **What the gate checks:**
 - **Deal-breakers** (`_profile.md` Deal-Breakers section) — deterministic, decisive on their own.
-- **Archetype fit** — detected archetype vs. `_profile.md` Arquétipos-Alvo (primary/secondary/adjacent/none).
+- **Archetype fit** — detected archetype vs. `config/profile.yml`'s `target_roles.archetypes[].fit` field (`primary`/`secondary`/`adjacent`) — that's where the tiering actually lives. `_profile.md`'s own archetype table (e.g. "Arcotipos-Alvo" or equivalent) is untiered prose framing, not the fit ranking; use it for narrative/positioning only, not for this check.
 - **Gap severity** — reuse the gap classification already produced by the Match block (hard blocker vs. nice-to-have, mitigation available or not). Never treat anything in `_profile.md`'s "Experiências Subestimadas" list as a gap, here or anywhere else.
 
+**Thresholds:** Read `config/profile.yml` → `prescreen_score_threshold` (default `3.5` if the key is absent) and `prescreen_ask_threshold` (default `4.0` if absent) — same read-with-default pattern as `auto_pdf_score_threshold`. Every file below (`oferta.md`, `pipeline.md`, `batch-prompt.md`) must resolve these two keys once and use the resolved values everywhere its own tier logic references "3.5" or "4.0" — don't treat those numbers as hardcoded literals.
+
 **Three tiers**, keyed to the Score Interpretation table above:
-- **≥ 4.0 (Clear good fit):** proceed automatically, no interruption. This is the common case — don't add friction to it.
-- **3.5–3.9 (Borderline):** show a short summary (archetype, core gap, estimated band, one-sentence reason) and ask the user whether to proceed with the full evaluation. Wait for an answer.
-- **< 3.5 (Clear bad fit), OR any `_profile.md` Deal-Breaker triggered, OR 2+ hard-blocker gaps on CORE JD requirements with mitigation explicitly "none available":** default to skipping the full evaluation. Show the same short summary plus a brief one-line override offer; don't block waiting for a response. No report, no report-number reservation, no tracker entry unless the user overrides.
+- **≥ `prescreen_ask_threshold` (Clear good fit):** proceed automatically, no interruption. This is the common case — don't add friction to it.
+- **`prescreen_score_threshold`–`prescreen_ask_threshold` (Borderline):** show a short summary (archetype, core gap, estimated band, one-sentence reason) and ask the user whether to proceed with the full evaluation. Wait for an answer.
+- **< `prescreen_score_threshold` (Clear bad fit), OR any `_profile.md` Deal-Breaker triggered, OR 2+ hard-blocker gaps on CORE JD requirements with mitigation explicitly "none available":** default to skipping the full evaluation. Show the same short summary plus a brief one-line override offer; don't block waiting for a response. No report, no report-number reservation, no tracker entry unless the user overrides.
 
 **Interactive vs. autonomous context:** the "ask and wait" behavior in the Borderline tier assumes a user is present and watching in real time (true for `/career-ops oferta` and single-URL `auto-pipeline` runs). Modes that process multiple offers semi-autonomously (`pipeline.md`) or run headless with no user present (`batch/batch-prompt.md`) must not block on a question — see their own files for how each adapts this tier and how each surfaces a skip so it isn't silently lost.
 

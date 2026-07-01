@@ -30,24 +30,21 @@ This complements — does not replace — the per-URL liveness gate in `auto-pip
 
    **Tuning it:** Generating a tailored PDF costs ~30–60s per entry (Playwright launch + HTML render) and produces files that often go unused — most roles score in the 2.x/3.x range and never reach the application stage. Raise `auto_pdf_score_threshold` (e.g. `4.0`) to write only the report for marginal offers and produce the PDF on demand via `/career-ops pdf {slug}`; set `0` to generate one for every offer. Both modes (Path A `/career-ops pipeline` and Path B `batch/batch-runner.sh`) read the same key, so behavior is identical regardless of which path processes an offer.
 3. **If there are 3+ pending URLs**, launch agents in parallel (Agent tool with `run_in_background`) to maximize speed.
-4. **At the end**, show summary table:
+4. **At the end**, show summary table (including one row per pre-screened-out offer per the Pre-Screen Gate section below — its own steps say exactly what goes in each column, don't duplicate that here):
 
 ```
 | # | Company | Role | Score | PDF | Recommended action |
 ```
 
-Add one row per pre-screened-out offer to this table too (e.g. `Score` column shows `~X.X/5 (pré-análise)`, `PDF` shows `—`), so skips are visible in the same place as completed evaluations.
-
 ## Pre-Screen Gate (per surviving URL)
 
-Apply the Pre-Screen Gate (see `modes/_shared.md` § Pre-Screen Gate (Quick Estimate)) after Step 0/Block A/B for each URL, before claiming a report number or running Blocks C-G. Because this mode processes multiple URLs with the user not necessarily watching each one live, it cannot pause on a question per URL — resolve automatically instead of asking:
+This mode never reads `modes/oferta.md`'s own Pre-Screen Gate section — step 2c above only asks for its Step 0/Block A/B *content*, not its gate. Apply this section instead: checks, thresholds, and tiers are defined once in `modes/_shared.md` § Pre-Screen Gate (Quick Estimate); this section only states pipeline.md's behavioral delta. Because this mode processes multiple URLs with the user not necessarily watching each one live, it cannot pause on a question per URL — resolve automatically instead of asking:
 
-- **Good fit (≥ 4.0):** proceed to Blocks C-G, as today.
-- **Borderline (3.5–3.9):** proceed to Blocks C-G — do not skip. An uncertain fit is worth a real (if provisional) evaluation in a batch context, since silently skipping a possibly-good offer with no live checkpoint risks losing it permanently.
-- **Clear bad fit (< 3.5, a `_profile.md` Deal-Breaker triggered, or 2+ hard-blocker CORE gaps with mitigation explicitly "none available"):** skip automatically.
-  - Append one row to `data/scan-history.tsv` (status `screened-out`).
+- **Good fit or Borderline (≥ `prescreen_score_threshold`):** proceed to Blocks C-G, as today — unlike the interactive gate, Borderline here does NOT ask; an uncertain fit is worth a real (if provisional) evaluation in a batch context, since silently skipping a possibly-good offer with no live checkpoint risks losing it permanently.
+- **Clear bad fit (< `prescreen_score_threshold`, a `_profile.md` Deal-Breaker triggered, or 2+ hard-blocker CORE gaps with mitigation explicitly "none available"):** skip automatically.
+  - Append one row to `data/scan-history.tsv` (status `skipped_prescreen`, matching this file's `skipped_*` convention) — note this permanently suppresses the URL from future scans on what is a provisional estimate, not a dead-link fact (same tradeoff as `oferta.md`'s gate; the user can still manually re-add the URL to force a fresh evaluation).
   - Move the entry from "Pending" to "Processed" as: `- [x] ~~URL | Company | Role~~ — pré-análise: fora do perfil (~X/5, {one-line reason})`.
-  - Add a row to the end-of-run summary table (step 4 above).
+  - Add one row to the end-of-run summary table (step 4 above): `Score` column shows `~X.X/5 (pré-análise)`, `PDF` shows `—`, `Recommended action` shows the one-line reason.
   - Do NOT write a report, do NOT reserve a report number, do NOT write to `data/applications.md` / `batch/tracker-additions/`.
   - Continue to the next URL.
 

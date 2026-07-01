@@ -84,33 +84,30 @@ Read `cv.md`. Create a table with each JD requirement mapped to exact lines in t
 
 ## Pre-Screen Gate
 
-Stop here and apply the Pre-Screen Gate (see `modes/_shared.md` § Pre-Screen Gate (Quick Estimate)) before committing to Blocks C-G — the WebSearch-heavy, interview-plan-heavy ~70% of this mode. Use only what Step 0 (archetype) and Block B (gaps) already produced. Zero new tool calls.
+**Skip this entire section if this Block B was invoked from `modes/pipeline.md`** — that mode applies its own Pre-Screen Gate section instead, and its per-URL loop already accounts for the fact no live user may be watching. Continuing past Block B straight into `pipeline.md`'s own gate (rather than reading this section at all) avoids ever landing in this section's interactive "ask and wait" behavior during a semi-autonomous multi-URL run.
 
-1. **Check `_profile.md` Deal-Breakers first** — if one fires, that's decisive on its own.
-2. **Check archetype fit** — is the Step 0 archetype one of `_profile.md`'s Arquétipos-Alvo (primary/secondary/adjacent), or entirely outside that list?
-3. **Check Block B's gap severity** — how many gaps are hard blockers on CORE/repeated JD requirements (not nice-to-haves), with mitigation explicitly "none available"? Never count anything from `_profile.md`'s Experiências Subestimadas list as a gap.
-4. **Produce a rough score band** (e.g. "~2-2.5/5") using the 6-dimension model from `_shared.md`, Comp/Cultural signals necessarily provisional.
+For direct `/career-ops oferta` or single-URL `auto-pipeline` invocations: stop here and apply the Pre-Screen Gate (checks, thresholds, and tiers defined in `modes/_shared.md` § Pre-Screen Gate (Quick Estimate)) before committing to Blocks C-G — the WebSearch-heavy, interview-plan-heavy ~70% of this mode. Use only what Step 0 (archetype) and Block B (gaps) already produced. Zero new tool calls.
 
-**Outcome:**
+**Outcome, using the thresholds `_shared.md` resolved from `config/profile.yml`:**
 
-- **≥ 4.0 (good fit):** proceed straight to Block C below. No summary, no interruption.
-- **3.5–3.9 (borderline):** show the Pre-Screen Summary (format below) and ask: *"Fit incerto (~X/5). Quer a análise completa (Blocks C-G + WebSearch + relatório) ou prefere pular?"* Wait for the answer. If proceed → continue to Block C. If skip → handle as below.
-- **< 3.5, a Deal-Breaker fired, or 2+ unmitigated hard-blocker CORE gaps (clear bad fit):** show the Pre-Screen Summary, state the full evaluation is being skipped by default, and offer a brief one-line override (e.g. "responda se quiser a análise completa mesmo assim"). Do not block waiting for a response — treat silence/moving on as confirmation to skip.
+- **≥ `prescreen_ask_threshold` (good fit):** proceed straight to Block C below. No summary, no interruption.
+- **`prescreen_score_threshold`–`prescreen_ask_threshold` (borderline):** show the Pre-Screen Summary (format below) and ask: *"Fit incerto (~X/5). Quer a análise completa (Blocks C-G + WebSearch + relatório) ou prefere pular?"* Wait for the answer. If proceed → continue to Block C. If skip → handle as below.
+- **< `prescreen_score_threshold`, a Deal-Breaker fired, or 2+ unmitigated hard-blocker CORE gaps (clear bad fit):** show the Pre-Screen Summary, state the full evaluation is being skipped by default, and offer a brief one-line override (e.g. "responda se quiser a análise completa mesmo assim"). Do not block waiting for a response — treat silence/moving on as confirmation to skip.
 
 **Pre-Screen Summary format** (shown in chat, never saved as a report file):
 
 ```markdown
 **Pré-análise: {Company} — {Role}**
-- Arquétipo: {detected} ({dentro/fora dos arquétipos-alvo})
+- Arquétipo: {detected} ({fit tier from config/profile.yml, or "fora dos arquétipos-alvo" if none})
 - Gap central: {the single strongest reason, 1 sentence}
 - Estimativa: ~{X.X-Y.Y}/5 ({tier label})
-- {Recommendation sentence appropriate to the tier}
 ```
+
+The tier-specific question/notice sentence from the Outcome bullets above is the recommendation — don't template a separate line for it.
 
 **When skipping (either tier):**
 - Do NOT call `reserve-report-num.mjs`. Do NOT write a report file. Do NOT write a TSV to `batch/tracker-additions/`. Do NOT touch `data/applications.md`.
-- If the offer came from a URL (not raw pasted JD text), append one row to `data/scan-history.tsv` (existing columns: `url, first_seen, portal, title, company, status, location`) with status `screened-out`, today's date, and whatever company/title/location is known. Skip this log for raw pasted JD text — nothing to dedup against.
-- If this evaluation came from `pipeline.md`, follow its own Pre-Screen Gate section for how to mark the inbox entry — don't duplicate that logic here.
+- If the offer came from a URL (not raw pasted JD text), append one row to `data/scan-history.tsv` (existing columns: `url, first_seen, portal, title, company, status, location`) with status `skipped_prescreen` — matching this file's existing `skipped_*` naming convention (`skipped_title`, `skipped_dup`, `skipped_expired`, etc.) — today's date, and whatever company/title/location is known. Skip this log for raw pasted JD text — nothing to dedup against. **Tradeoff to flag to the user if they ask why an offer never resurfaced:** every non-`added` status in this file permanently suppresses that URL from future `/career-ops scan` results, with no recheck window. Unlike the other `skipped_*` statuses (which record deterministic facts — a dead link, a blocked host), `skipped_prescreen` is written from a cheap, no-WebSearch estimate that could be wrong. If the user's target archetypes broaden later, or they think the gate misjudged an offer, they can still manually re-add the URL to `data/pipeline.md` to force a fresh evaluation — the scan-history entry only suppresses automatic resurfacing, not manual re-entry.
 
 **When proceeding:** continue to Block C exactly as below — nothing else changes.
 
