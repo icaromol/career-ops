@@ -125,6 +125,18 @@ Sección de **gaps** con estrategia de mitigación para cada uno:
 3. ¿Hay un proyecto portfolio que cubra este gap?
 4. Plan de mitigación concreto
 
+#### Pre-Screen Gate (headless — auto only, never asks)
+
+No hay usuario presente en modo batch, así que este gate solo puede auto-skip o auto-proceed — nunca preguntar. Un buen candidato saltado por error es irrecuperable en modo headless (no hay revisión de sesión, a diferencia de `pipeline.md`), así que solo saltar ante la señal de más alta confianza, nunca ante un score fuzzy:
+
+- **Skip** (no ejecutar Bloques C-G, no generar PDF): dispara una regla explícita de Deal-Breaker en `_profile.md`, O el Bloque B encuentra 2+ gaps hard-blocker en requisitos CORE/repetidos del JD donde el paso 4 del análisis de gaps ("plan de mitigación concreto") es honestamente "ninguno disponible" (no un plan débil — uno genuinamente ausente).
+- **En cualquier otro caso, proceder siempre** a los Bloques C-G, incluso con un score estimado borderline/fuzzy (3.5-3.9). No interpolar aquí un umbral de skip basado en score — ese juicio necesita un humano, y el modo batch no tiene ninguno presente.
+
+**Si se decide Skip:**
+- Igual escribir el report en Paso 3, pero abreviado: Bloque A + Bloque B (con la conclusión de gaps) + una nota de una línea explicando por qué se saltaron los Bloques C-G y el motivo. En el `Machine Summary`, usar `final_decision: "Skip"` y poblar `hard_stops` con los gaps/deal-breakers que dispararon el skip.
+- Igual escribir la línea TSV del Paso 5, con `status` = `SKIP` (ya es un estado canónico) — a diferencia de los caminos interactivo/pipeline, la línea TSV de un batch run es el único registro durable que el usuario verá para esta oferta, así que no puede omitirse silenciosamente.
+- Saltar el Paso 4 (PDF) por completo: `pdf_emoji` = `❌`, `"pdf": null` en el Paso 6.
+
 #### Bloque C — Nivel y Estrategia
 
 1. **Nivel detectado** en el JD vs **candidate's natural level**

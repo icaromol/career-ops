@@ -20,11 +20,11 @@ This complements — does not replace — the per-URL liveness gate in `auto-pip
 
 1. **Read** `data/pipeline.md` → search for `- [ ]` items in the "Pending" section. Run the **Liveness sweep** (above) first and drop any expired entries before continuing.
 2. **For each surviving pending URL**:
-   a. Claim the next sequential `REPORT_NUM` atomically by running `node reserve-report-num.mjs` (and release the sentinel using `node reserve-report-num.mjs --release <num>` after the report is written)
-   b. **Extract JD** using Playwright (browser_navigate + browser_snapshot) → WebFetch → WebSearch
-   c. If the URL is not accessible → mark as `- [!]` with a note and continue
-   d. **Execute full auto-pipeline**: Evaluation A-F → Report .md → PDF (if score >= `auto_pdf_score_threshold`) → Tracker
-   e. **Move from "Pending" to "Processed"**: `- [x] #NNN | URL | Company | Role | Score/5 | PDF ✅/❌`
+   a. **Extract JD** using Playwright (browser_navigate + browser_snapshot) → WebFetch → WebSearch
+   b. If the URL is not accessible → mark as `- [!]` with a note and continue
+   c. **Run Step 0 (Archetype Detection) and Block A/B (Match with CV)** from `modes/oferta.md`, then apply the **Pre-Screen Gate** below. Only claim a `REPORT_NUM` (via `node reserve-report-num.mjs`, released via `--release <num>` after writing) once the gate says to proceed — never reserve a number for an offer that gets screened out.
+   d. **If the gate says proceed**: continue the full evaluation — Blocks C-G → Report .md → PDF (if score >= `auto_pdf_score_threshold`) → Tracker. Move the entry: `- [x] #NNN | URL | Company | Role | Score/5 | PDF ✅/❌`.
+   e. **If the gate says skip**: handle per the Pre-Screen Gate section below — no report, no report number, no tracker entry.
 
    **About the PDF gate (configurable):** Read `config/profile.yml` → `auto_pdf_score_threshold`. If the key does not exist, default to `3.0` (this mode's original gate). If the evaluation score is less than the threshold, skip PDF generation: write the report normally, show in the header `**PDF:** not generated — run /career-ops pdf {company-slug} to create on demand`, and mark PDF ❌ in the tracker. If the score is ≥ threshold, generate the PDF as usual.
 
@@ -35,6 +35,21 @@ This complements — does not replace — the per-URL liveness gate in `auto-pip
 ```
 | # | Company | Role | Score | PDF | Recommended action |
 ```
+
+Add one row per pre-screened-out offer to this table too (e.g. `Score` column shows `~X.X/5 (pré-análise)`, `PDF` shows `—`), so skips are visible in the same place as completed evaluations.
+
+## Pre-Screen Gate (per surviving URL)
+
+Apply the Pre-Screen Gate (see `modes/_shared.md` § Pre-Screen Gate (Quick Estimate)) after Step 0/Block A/B for each URL, before claiming a report number or running Blocks C-G. Because this mode processes multiple URLs with the user not necessarily watching each one live, it cannot pause on a question per URL — resolve automatically instead of asking:
+
+- **Good fit (≥ 4.0):** proceed to Blocks C-G, as today.
+- **Borderline (3.5–3.9):** proceed to Blocks C-G — do not skip. An uncertain fit is worth a real (if provisional) evaluation in a batch context, since silently skipping a possibly-good offer with no live checkpoint risks losing it permanently.
+- **Clear bad fit (< 3.5, a `_profile.md` Deal-Breaker triggered, or 2+ hard-blocker CORE gaps with mitigation explicitly "none available"):** skip automatically.
+  - Append one row to `data/scan-history.tsv` (status `screened-out`).
+  - Move the entry from "Pending" to "Processed" as: `- [x] ~~URL | Company | Role~~ — pré-análise: fora do perfil (~X/5, {one-line reason})`.
+  - Add a row to the end-of-run summary table (step 4 above).
+  - Do NOT write a report, do NOT reserve a report number, do NOT write to `data/applications.md` / `batch/tracker-additions/`.
+  - Continue to the next URL.
 
 ## Format of pipeline.md
 

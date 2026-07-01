@@ -87,6 +87,22 @@ Classify every offer into one of these types (or hybrid of 2):
 
 After detecting archetype, read `modes/_profile.md` for the user's specific framing and proof points for that archetype.
 
+## Pre-Screen Gate (Quick Estimate)
+
+Before committing to the expensive parts of a full evaluation (Comp research, Interview Plan, Posting Legitimacy — all WebSearch/effort-heavy), compute a quick, zero-new-tool-call estimate using only what's already in context: Archetype Detection (above) plus the cheap Role Summary / Match blocks already produced. This estimate reuses the same 6-dimension model as Scoring System above, but Comp and Cultural signals are necessarily provisional (no WebSearch has run yet).
+
+**What the gate checks:**
+- **Deal-breakers** (`_profile.md` Deal-Breakers section) — deterministic, decisive on their own.
+- **Archetype fit** — detected archetype vs. `_profile.md` Arquétipos-Alvo (primary/secondary/adjacent/none).
+- **Gap severity** — reuse the gap classification already produced by the Match block (hard blocker vs. nice-to-have, mitigation available or not). Never treat anything in `_profile.md`'s "Experiências Subestimadas" list as a gap, here or anywhere else.
+
+**Three tiers**, keyed to the Score Interpretation table above:
+- **≥ 4.0 (Clear good fit):** proceed automatically, no interruption. This is the common case — don't add friction to it.
+- **3.5–3.9 (Borderline):** show a short summary (archetype, core gap, estimated band, one-sentence reason) and ask the user whether to proceed with the full evaluation. Wait for an answer.
+- **< 3.5 (Clear bad fit), OR any `_profile.md` Deal-Breaker triggered, OR 2+ hard-blocker gaps on CORE JD requirements with mitigation explicitly "none available":** default to skipping the full evaluation. Show the same short summary plus a brief one-line override offer; don't block waiting for a response. No report, no report-number reservation, no tracker entry unless the user overrides.
+
+**Interactive vs. autonomous context:** the "ask and wait" behavior in the Borderline tier assumes a user is present and watching in real time (true for `/career-ops oferta` and single-URL `auto-pipeline` runs). Modes that process multiple offers semi-autonomously (`pipeline.md`) or run headless with no user present (`batch/batch-prompt.md`) must not block on a question — see their own files for how each adapts this tier and how each surfaces a skip so it isn't silently lost.
+
 ## Global Rules
 
 ### NEVER

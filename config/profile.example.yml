@@ -132,3 +132,20 @@ cover_letter:
 # half-point scores like 3.5/5 occur in evaluations). Set it to 0 to
 # generate a PDF for every offer.
 # auto_pdf_score_threshold: 4.0
+
+# ── Pre-Screen Gate thresholds ──────────────────────────────────────────────
+#
+# Quick-estimate bands used by the Pre-Screen Gate (see `modes/_shared.md`)
+# to decide whether a full A-G evaluation is worth running before the
+# expensive WebSearch/interview-plan blocks. Computed from archetype fit,
+# deal-breakers, and the CV-match gap analysis alone — no new tool calls.
+#
+# Defaults (keys absent): prescreen_score_threshold 3.5, prescreen_ask_threshold 4.0
+# — matching the existing Score Interpretation bands in `modes/_shared.md`.
+#
+# - Estimated score >= prescreen_ask_threshold: proceed automatically, no interruption.
+# - Between the two thresholds: ask the user whether to run the full evaluation (interactive modes only).
+# - Below prescreen_score_threshold, or a Deal-Breaker fires, or 2+ unmitigated
+#   hard-blocker gaps on core JD requirements: skip the full evaluation by default.
+# prescreen_score_threshold: 3.5
+# prescreen_ask_threshold: 4.0

@@ -66,7 +66,7 @@ Table with:
 
 ## Block B — Match with CV
 
-Read `cv.md`. Create a table with each JD requirement mapped to exact lines in the CV.
+Read `cv.md`. Create a table with each JD requirement mapped to exact lines in the CV. Keep this block's rigor intact even under time pressure — the Pre-Screen Gate below reads its Gaps section directly, so a rushed or abbreviated gap analysis here degrades the gate's decision.
 
 **Adapted to the archetype:**
 - If FDE → prioritize delivery speed and client-facing proof points
@@ -81,6 +81,38 @@ Read `cv.md`. Create a table with each JD requirement mapped to exact lines in t
 2. Can the candidate demonstrate adjacent experience?
 3. Is there a portfolio project that covers this gap?
 4. Concrete mitigation plan (phrase for cover letter, quick project, etc.)
+
+## Pre-Screen Gate
+
+Stop here and apply the Pre-Screen Gate (see `modes/_shared.md` § Pre-Screen Gate (Quick Estimate)) before committing to Blocks C-G — the WebSearch-heavy, interview-plan-heavy ~70% of this mode. Use only what Step 0 (archetype) and Block B (gaps) already produced. Zero new tool calls.
+
+1. **Check `_profile.md` Deal-Breakers first** — if one fires, that's decisive on its own.
+2. **Check archetype fit** — is the Step 0 archetype one of `_profile.md`'s Arquétipos-Alvo (primary/secondary/adjacent), or entirely outside that list?
+3. **Check Block B's gap severity** — how many gaps are hard blockers on CORE/repeated JD requirements (not nice-to-haves), with mitigation explicitly "none available"? Never count anything from `_profile.md`'s Experiências Subestimadas list as a gap.
+4. **Produce a rough score band** (e.g. "~2-2.5/5") using the 6-dimension model from `_shared.md`, Comp/Cultural signals necessarily provisional.
+
+**Outcome:**
+
+- **≥ 4.0 (good fit):** proceed straight to Block C below. No summary, no interruption.
+- **3.5–3.9 (borderline):** show the Pre-Screen Summary (format below) and ask: *"Fit incerto (~X/5). Quer a análise completa (Blocks C-G + WebSearch + relatório) ou prefere pular?"* Wait for the answer. If proceed → continue to Block C. If skip → handle as below.
+- **< 3.5, a Deal-Breaker fired, or 2+ unmitigated hard-blocker CORE gaps (clear bad fit):** show the Pre-Screen Summary, state the full evaluation is being skipped by default, and offer a brief one-line override (e.g. "responda se quiser a análise completa mesmo assim"). Do not block waiting for a response — treat silence/moving on as confirmation to skip.
+
+**Pre-Screen Summary format** (shown in chat, never saved as a report file):
+
+```markdown
+**Pré-análise: {Company} — {Role}**
+- Arquétipo: {detected} ({dentro/fora dos arquétipos-alvo})
+- Gap central: {the single strongest reason, 1 sentence}
+- Estimativa: ~{X.X-Y.Y}/5 ({tier label})
+- {Recommendation sentence appropriate to the tier}
+```
+
+**When skipping (either tier):**
+- Do NOT call `reserve-report-num.mjs`. Do NOT write a report file. Do NOT write a TSV to `batch/tracker-additions/`. Do NOT touch `data/applications.md`.
+- If the offer came from a URL (not raw pasted JD text), append one row to `data/scan-history.tsv` (existing columns: `url, first_seen, portal, title, company, status, location`) with status `screened-out`, today's date, and whatever company/title/location is known. Skip this log for raw pasted JD text — nothing to dedup against.
+- If this evaluation came from `pipeline.md`, follow its own Pre-Screen Gate section for how to mark the inbox entry — don't duplicate that logic here.
+
+**When proceeding:** continue to Block C exactly as below — nothing else changes.
 
 ## Block C — Level and Strategy
 

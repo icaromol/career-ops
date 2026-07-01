@@ -52,7 +52,7 @@ AI-powered, CLI-agnostic job search automation: pipeline tracking, offer evaluat
 |------|----------|
 | `data/applications.md` | Application tracker |
 | `data/pipeline.md` | Inbox of pending URLs |
-| `data/scan-history.tsv` | Scanner dedup history |
+| `data/scan-history.tsv` | Scanner dedup history + pre-screen skip log |
 | `portals.yml` | Query and company config |
 | `templates/cv-template-flat.html` | HTML template for CVs |
 | `templates/cv-template.tex` | LaTeX/Overleaf template for CVs |
@@ -238,7 +238,7 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 **This system is designed for quality, not quantity.** The goal is to help the user find and apply to roles where there is a genuine match -- not to spam companies with mass applications.
 
 - **NEVER submit an application without the user reviewing it first.** Fill forms, draft answers, generate PDFs -- but always STOP before clicking Submit/Send/Apply. The user makes the final call.
-- **Strongly discourage low-fit applications.** If a score is below 4.0/5, explicitly recommend against applying. The user's time and the recruiter's time are both valuable. Only proceed if the user has a specific reason to override the score.
+- **Strongly discourage low-fit applications.** If a score is below 4.0/5, explicitly recommend against applying. The user's time and the recruiter's time are both valuable. Only proceed if the user has a specific reason to override the score. This applies even before a full report exists: the Pre-Screen Gate (see `modes/_shared.md`) may determine an offer is a clear bad fit from a cheap estimate alone and skip the full evaluation entirely -- that is the same principle applied earlier, not an exception to it.
 - **Quality over speed.** A well-targeted application to 5 companies beats a generic blast to 50. Guide the user toward fewer, better applications.
 - **Respect recruiters' time.** Every application a human reads costs someone's attention. Only send what's worth reading.
 
