@@ -63,6 +63,10 @@ Aplicación durante la evaluación A-G:
 2. Si el archivo está vacío o no existe, intenta obtener el JD desde `{{URL}}` con WebFetch
 3. Si ambos fallan, reporta error y termina
 
+### Paso 1.5 — Detección de plataforma Gupy
+
+Aplica la regla de `modes/_shared.md` § Platform Detection: Gupy sobre `{{URL}}` (si está disponible). Si el host coincide con `*.gupy.io`, marca esta oferta como Gupy para el resto del pipeline — esto hace el Paso 4 (PDF) un no-op incondicional más abajo, sin importar el score que resulte del Paso 2.
+
 ### Paso 2 — Evaluación A-G
 
 Read `cv.md`. Ejecuta TODOS los bloques:
@@ -240,7 +244,7 @@ Donde `{company-slug}` es el nombre de empresa en lowercase, sin espacios, con g
 **Score:** {X/5}
 **Legitimacy:** {High Confidence | Proceed with Caution | Suspicious}
 **URL:** {URL de la oferta original}
-**PDF:** {output/cv-candidate-{company-slug}-{{DATE}}.pdf if score ≥ the resolved `auto_pdf_score_threshold` from Paso 4, else `not generated — run /career-ops pdf {company-slug} to create on demand`}
+**PDF:** {if Gupy platform detected in Paso 1.5, always use the exact Gupy line from `modes/_shared.md` § Platform Detection: Gupy, regardless of score; else output/cv-candidate-{company-slug}-{{DATE}}.pdf if score ≥ the resolved `auto_pdf_score_threshold` from Paso 4, else `not generated — run /career-ops pdf {company-slug} to create on demand`}
 **Batch ID:** {{ID}}
 
 ---
@@ -302,7 +306,9 @@ Bloques C, D, E, F, G quedan como `(omitido — Pre-Screen Gate: ver nota abajo)
 
 ### Paso 4 — Generar PDF (configurable)
 
-**Gate:** Read `config/profile.yml` → `auto_pdf_score_threshold`. If the key is absent, default to **`3.0`** (the original gate of Path A). This step ONLY runs when the score from Paso 2 is **≥ the resolved threshold**. For everything below it, skip this entire step — the user can generate a tailored PDF on demand later via `/career-ops pdf {company-slug}` using the report from Paso 3 as input.
+**Gupy override (se evalúa primero, antes del Gate por score):** Si el Paso 1.5 marcó esta oferta como Gupy, saltar este paso por completo — no ejecutar ninguno de los sub-pasos 1-14, sin importar el score. En el header del report (Paso 3) usar la línea exacta de Gupy de `modes/_shared.md`. En Paso 5 (tracker line) usar `pdf_emoji` = `❌`. En Paso 6 (output JSON) `"pdf": null`. Ir directo a Paso 5.
+
+**Gate (solo si NO es Gupy):** Read `config/profile.yml` → `auto_pdf_score_threshold`. If the key is absent, default to **`3.0`** (the original gate of Path A). This step ONLY runs when the score from Paso 2 is **≥ the resolved threshold**. For everything below it, skip this entire step — the user can generate a tailored PDF on demand later via `/career-ops pdf {company-slug}` using the report from Paso 3 as input.
 
 **Rationale:** Generating a tailored PDF costs ~30–60s per offer (Playwright launch + HTML render) and produces files that often go unused — most roles score 2.x/3.x and never reach application. The `3.0` default matches Path A's original behavior; raise `auto_pdf_score_threshold` (e.g. `4.0`) to pre-generate fewer PDFs, or set `0` to generate one for every offer. Both Path A (`/career-ops pipeline`) and Path B (this batch worker) read the same config key for consistency.
 

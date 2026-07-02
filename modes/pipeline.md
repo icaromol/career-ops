@@ -22,15 +22,18 @@ This complements — does not replace — the per-URL liveness gate in `auto-pip
 2. **For each surviving pending URL**:
    a. **Extract JD** using Playwright (browser_navigate + browser_snapshot) → WebFetch → WebSearch
    b. If the URL is not accessible → mark as `- [!]` with a note and continue
+   b.5. **Apply `modes/_shared.md` § Platform Detection: Gupy** — check if the URL host ends in `.gupy.io`. If it does, remember this for the PDF gate below (no PDF regardless of score) and for the end-of-run summary (flag it as Gupy so the candidate knows `/career-ops gupy {slug}` is available).
    c. **Run Step 0 (Archetype Detection) and Block A/B (Match with CV)** from `modes/oferta.md`, then apply the **Pre-Screen Gate** below. Only claim a `REPORT_NUM` (via `node reserve-report-num.mjs`, released via `--release <num>` after writing) once the gate says to proceed — never reserve a number for an offer that gets screened out.
    d. **If the gate says proceed**: continue the full evaluation — Blocks C-G → Report .md → PDF (if score >= `auto_pdf_score_threshold`) → Tracker. Move the entry: `- [x] #NNN | URL | Company | Role | Score/5 | PDF ✅/❌`.
    e. **If the gate says skip**: handle per the Pre-Screen Gate section below — no report, no report number, no tracker entry.
 
-   **About the PDF gate (configurable):** Read `config/profile.yml` → `auto_pdf_score_threshold`. If the key does not exist, default to `3.0` (this mode's original gate). If the evaluation score is less than the threshold, skip PDF generation: write the report normally, show in the header `**PDF:** not generated — run /career-ops pdf {company-slug} to create on demand`, and mark PDF ❌ in the tracker. If the score is ≥ threshold, generate the PDF as usual.
+   **About the PDF gate (configurable):** **Gupy override first (see step 2.b.5 above):** if this offer was flagged as Gupy, skip PDF generation unconditionally — regardless of score — and use the exact Gupy line from `modes/_shared.md` § Platform Detection: Gupy in the report header's `**PDF:**` field. Do not evaluate the score-based gate below for Gupy offers.
+
+   **Score-based gate (non-Gupy offers only):** Read `config/profile.yml` → `auto_pdf_score_threshold`. If the key does not exist, default to `3.0` (this mode's original gate). If the evaluation score is less than the threshold, skip PDF generation: write the report normally, show in the header `**PDF:** not generated — run /career-ops pdf {company-slug} to create on demand`, and mark PDF ❌ in the tracker. If the score is ≥ threshold, generate the PDF as usual.
 
    **Tuning it:** Generating a tailored PDF costs ~30–60s per entry (Playwright launch + HTML render) and produces files that often go unused — most roles score in the 2.x/3.x range and never reach the application stage. Raise `auto_pdf_score_threshold` (e.g. `4.0`) to write only the report for marginal offers and produce the PDF on demand via `/career-ops pdf {slug}`; set `0` to generate one for every offer. Both modes (Path A `/career-ops pipeline` and Path B `batch/batch-runner.sh`) read the same key, so behavior is identical regardless of which path processes an offer.
 3. **If there are 3+ pending URLs**, launch agents in parallel (Agent tool with `run_in_background`) to maximize speed.
-4. **At the end**, show summary table (including one row per pre-screened-out offer per the Pre-Screen Gate section below — its own steps say exactly what goes in each column, don't duplicate that here):
+4. **At the end**, show summary table (including one row per pre-screened-out offer per the Pre-Screen Gate section below — its own steps say exactly what goes in each column, don't duplicate that here). For Gupy offers, the `Recommended action` column must note "Gupy — sem PDF; use /career-ops gupy {slug} para apresentação + habilidades" instead of a generic apply/skip recommendation:
 
 ```
 | # | Company | Role | Score | PDF | Recommended action |

@@ -53,6 +53,10 @@ Classify the job into one of the 6 archetypes (see `_shared.md`). If it is a hyb
 - How to rewrite the summary in block E
 - Which STAR stories to prepare in block F
 
+## Step 0.7 — Gupy Platform Detection
+
+Apply `modes/_shared.md` § Platform Detection: Gupy — check if the URL host ends in `.gupy.io`. If it does, this offer is Gupy: no PDF will be generated regardless of score (see the Post-evaluation section below), the report header carries the Gupy PDF line, and the chat output must tell the candidate this is a Gupy posting and that `/career-ops gupy {slug}` is available on request. Do not generate the apresentação/skills text automatically — only note availability.
+
 ## Block A — Role Summary
 
 Table with:
@@ -294,7 +298,7 @@ Save full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 **Archetype:** {detected}
 **Score:** {X/5}
 **Legitimacy:** {High Confidence | Proceed with Caution | Suspicious}
-**PDF:** {path or pending}
+**PDF:** {path or pending; if Gupy platform detected (Step 0.7), always use the exact Gupy line from `modes/_shared.md` § Platform Detection: Gupy, regardless of score}
 
 ---
 
@@ -337,7 +341,7 @@ Save full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 - Role
 - Score: match average (1-5)
 - Status: `Evaluated`
-- PDF: ❌ (or ✅ if auto-pipeline generated PDF)
+- PDF: ❌ (or ✅ if auto-pipeline generated PDF; always ❌ for Gupy offers, see Step 0.7)
 - Report: root-relative link `[001](reports/001-company-2026-01-01.md)` (when merged via `merge-tracker.mjs` it is normalized to be relative to the tracker's own dir, e.g. `../reports/...`; see #760)
 
 **Tracker format:**

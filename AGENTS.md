@@ -223,6 +223,7 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 | Asks about rejection patterns or wants to improve targeting | `patterns` |
 | Quer revisar CV tailorizado contra a vaga (keywords, ATS, bullets) | `cv-review` |
 | Asks about follow-ups or application cadence | `followup` |
+| Quer apresentação + habilidades Gupy sob demanda (vaga já avaliada e detectada como Gupy) | `gupy` |
 | Wants to update the system | `update` |
 
 ### CV Source of Truth

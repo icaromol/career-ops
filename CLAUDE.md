@@ -97,6 +97,7 @@ You can invoke the command center or any of its modes directly within your CLI:
 * `batch` — Run parallel batch evaluations
 * `patterns` — Analyze rejection patterns
 * `followup` — Update and calculate follow-ups
+* `gupy` — Generate Gupy application text (apresentação + skills) on demand
 * `update` — Update system files
 
 All `modes/*` files and prompt contexts (e.g., `GEMINI.md`) are shared across Claude Code, OpenCode, and Gemini CLI.
@@ -245,6 +246,7 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 | Asks about rejection patterns or wants to improve targeting | `patterns` |
 | Quer revisar CV tailorizado contra a vaga (keywords, ATS, bullets) | `cv-review` |
 | Asks about follow-ups or application cadence | `followup` |
+| Quer apresentação + habilidades Gupy sob demanda (vaga já avaliada e detectada como Gupy) | `gupy` |
 
 ### CV Source of Truth
 

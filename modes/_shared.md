@@ -105,6 +105,20 @@ Before committing to the expensive parts of a full evaluation (Comp research, In
 
 **Interactive vs. autonomous context:** the "ask and wait" behavior in the Borderline tier assumes a user is present and watching in real time (true for `/career-ops oferta` and single-URL `auto-pipeline` runs). Modes that process multiple offers semi-autonomously (`pipeline.md`) or run headless with no user present (`batch/batch-prompt.md`) must not block on a question — see their own files for how each adapts this tier and how each surfaces a skip so it isn't silently lost.
 
+## Platform Detection: Gupy
+
+Antes de gerar qualquer PDF/CV tailorizado (em `oferta`, `pipeline`, `batch`, ou `pdf`), verifique se a URL da vaga tem host terminando em `.gupy.io`. Se sim, esta oferta é uma **vaga Gupy** e a regra abaixo é obrigatória, independente do score.
+
+**Por quê:** a Gupy não permite upload de CV/PDF customizado no fluxo padrão — o candidato aplica com o CV já cadastrado na própria plataforma. Gerar um PDF tailorizado para essas vagas é esforço desperdiçado.
+
+**O que fazer:**
+1. **Nunca gerar PDF/HTML tailorizado** para esta oferta, mesmo que o score esteja acima de `auto_pdf_score_threshold`.
+2. No header do relatório, usar exatamente esta linha no campo `**PDF:**`:
+   `**PDF:** não gerado — processo Gupy (regra de plataforma: sem CV tailorizado em Gupy, foco nas perguntas do processo seletivo)`
+3. No tracker, marcar a coluna PDF como `❌`.
+4. Avisar o usuário no output do chat/resumo que esta é uma vaga Gupy e que PDF não foi gerado por essa razão — **não gerar automaticamente o texto de apresentação nem sugerir habilidades**. Apenas informar que `/career-ops gupy {slug}` está disponível quando o usuário quiser esses artefatos.
+5. Continuar normalmente com o resto da avaliação (blocos A-G, relatório, tracker) — só o PDF é pulado.
+
 ## Global Rules
 
 ### NEVER

@@ -1,5 +1,9 @@
 # Mode: pdf — ATS-Optimized PDF Generation
 
+## Gupy guard (check first)
+
+Antes de qualquer coisa, verificar se esta é uma vaga Gupy (header do relatório `**URL:**` bate com `*.gupy.io`, ou o header já carrega a linha de PDF Gupy de `modes/_shared.md`). Se sim, recusar o comportamento padrão: avisar o usuário "Esta vaga é Gupy — PDF tailorizado não é usado nesse ATS (o candidato aplica com o perfil já cadastrado). Você quer mesmo assim gerar um PDF de referência pessoal (não será enviado à empresa), ou prefere `/career-ops gupy {slug}` para a apresentação Gupy?" Só prosseguir com a geração de PDF se o usuário confirmar explicitamente após esse aviso.
+
 ## Full pipeline
 
 1. Read `cv.md` as the source of truth
