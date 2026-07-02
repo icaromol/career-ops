@@ -48,11 +48,29 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `modes/training.md` | Training evaluation instructions |
 | `modes/patterns.md` | Pattern analysis instructions |
 | `modes/followup.md` | Follow-up cadence instructions |
+| `modes/gupy.md` | Gupy apresentação/skills generator instructions |
+| `modes/cover.md` | Cover letter generation instructions |
+| `modes/latex.md` | LaTeX/Overleaf CV export instructions |
+| `modes/cv-review.md` | CV × JD deep review instructions |
+| `modes/cv-review-rewrite.md` | CV review with auto-apply fixes instructions |
+| `modes/experience-analyze.md` | Experience section audit instructions |
+| `modes/experience-optimize.md` | Experience section rewrite instructions |
+| `modes/resume-analyze.md` | Resume gap analysis instructions |
+| `modes/resume-optimize.md` | Resume summary rewrite instructions |
+| `modes/resume-update.md` | Resume bulk update instructions |
+| `modes/languages.md` | Language mode routing/detection instructions |
+| `modes/preview.md` | Local HTML CV preview instructions |
+| `modes/interview.md` | Onboarding/on-demand interview instructions |
+| `modes/interview-prep.md` | Company-specific interview prep instructions |
+| `modes/update.md` | System self-update instructions |
+| `modes/ar/*` | Arabic language modes |
 | `modes/de/*` | German language modes |
 | `modes/fr/*` | French language modes |
 | `modes/ja/*` | Japanese language modes |
 | `modes/pt/*` | Portuguese language modes |
 | `modes/ru/*` | Russian language modes |
+| `modes/tr/*` | Turkish language modes |
+| `modes/ua/*` | Ukrainian language modes |
 | `CLAUDE.md` | Agent instructions (Claude Code) |
 | `OPENCODE.md` | Agent instructions (OpenCode) |
 | `AGENTS.md` | Canonical agent instructions (imported by CLI-specific wrappers) |
