@@ -39,7 +39,9 @@ Include Block G in the saved report. Add **URL:** {url} and **Legitimacy:** {tie
 
 ## Step 3 — Generate PDF
 
-Read `config/profile.yml`. Check `cv.output_format`:
+Apply `modes/_shared.md` § Platform Detection: Gupy first — if this offer is Gupy, skip this entire step (no PDF, no LaTeX), use the Gupy `**PDF:**` line in the report header, and tell the candidate `/career-ops gupy {slug}` is available on request. Do not ask for confirmation here — auto-pipeline runs unattended, so the skip is automatic per the "modo automático" clause in that section.
+
+Otherwise, read `config/profile.yml`. Check `cv.output_format`:
 
 - If `"latex"`, execute the full pipeline from `modes/latex.md`
 - Otherwise (default), execute the full pipeline from `modes/pdf.md`
@@ -82,6 +84,6 @@ If the final score is >= 4.5, generate a draft of responses for the application 
 
 ## Step 5 — Update Tracker
 
-Record it in `data/applications.md` with all columns including Report and PDF as ✅.
+Record it in `data/applications.md` with all columns including Report and PDF as ✅ — **except** when Step 3 skipped generation for a Gupy offer, in which case PDF is always ❌ regardless of this step's default instruction (see `modes/_shared.md` § Platform Detection: Gupy, rule 3).
 
 **If any step fails**, continue with the next ones and mark the failed step as pending in the tracker.

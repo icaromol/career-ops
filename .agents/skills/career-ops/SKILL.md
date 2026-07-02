@@ -44,7 +44,7 @@ Determine the mode from `$mode`:
 
 **Auto-pipeline detection:** If `$mode` is not a known sub-command AND contains JD text (keywords: "responsibilities", "requirements", "qualifications", "about the role", "we're looking for", company name + role) or a URL to a JD, execute `auto-pipeline`.
 
-**Gupy on-demand detection:** Se `$mode` não é um subcomando conhecido mas o input é um pedido em linguagem natural referenciando "apresentação Gupy", "apresentação para {empresa}", ou frase similar pedindo para preparar texto de aplicação Gupy para uma vaga já avaliada, rotear para `gupy` em vez de cair em discovery ou auto-pipeline.
+**Gupy on-demand detection:** Se `$mode` não é um subcomando conhecido mas o input é um pedido em linguagem natural que menciona explicitamente "Gupy" (ex: "apresentação Gupy para {empresa}", "gera o texto Gupy dessa vaga"), rotear para `gupy` em vez de cair em discovery ou auto-pipeline. Não rotear apenas por "apresentação para {empresa}" sem a palavra Gupy — essa frase é ambígua com `cover` (cover letter), que já cobre esse caso para vagas não-Gupy.
 
 If `$mode` is not a sub-command AND doesn't look like a JD, show discovery.
 

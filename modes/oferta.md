@@ -53,9 +53,7 @@ Classify the job into one of the 6 archetypes (see `_shared.md`). If it is a hyb
 - How to rewrite the summary in block E
 - Which STAR stories to prepare in block F
 
-## Step 0.7 — Gupy Platform Detection
-
-Apply `modes/_shared.md` § Platform Detection: Gupy — check if the URL host ends in `.gupy.io`. If it does, this offer is Gupy: no PDF will be generated regardless of score (see the Post-evaluation section below), the report header carries the Gupy PDF line, and the chat output must tell the candidate this is a Gupy posting and that `/career-ops gupy {slug}` is available on request. Do not generate the apresentação/skills text automatically — only note availability.
+`modes/_shared.md` § Platform Detection: Gupy applies automatically from here on — it is a standing rule, not something this step needs to separately invoke. If this offer turns out to be Gupy, it silently governs PDF generation in the Post-evaluation section below.
 
 ## Block A — Role Summary
 

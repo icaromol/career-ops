@@ -107,15 +107,22 @@ Before committing to the expensive parts of a full evaluation (Comp research, In
 
 ## Platform Detection: Gupy
 
-Antes de gerar qualquer PDF/CV tailorizado (em `oferta`, `pipeline`, `batch`, ou `pdf`), verifique se a URL da vaga tem host terminando em `.gupy.io`. Se sim, esta oferta é uma **vaga Gupy** e a regra abaixo é obrigatória, independente do score.
+**Regra permanente — aplica-se automaticamente a QUALQUER mode que gere ou possa gerar um PDF/CV tailorizado** (`oferta`, `ofertas`, `auto-pipeline`, `pipeline`, `batch`, `pdf`, `latex`, a árvore `modes/{lang}/` inteira, e qualquer mode futuro que chame `modes/pdf.md` ou `modes/latex.md`), sem exigir um "gatilho" separado em cada arquivo de mode — do mesmo jeito que Voice DNA e Professional Writing (acima) se aplicam a todo texto gerado sem cada mode precisar reafirmar a regra.
+
+**Trigger (nesta ordem — o primeiro sinal disponível decide):**
+1. **URL disponível:** host termina em `.gupy.io` → vaga Gupy.
+2. **Sem URL (JD colada como texto puro):** procure por sinais de Gupy no próprio texto da JD — menções a "Gupy", rodapé/watermark "powered by Gupy", ou instrução de candidatura que referencia explicitamente a plataforma Gupy. Se nenhum sinal for encontrado, trate como não-Gupy (não é possível detectar com certeza sem URL nem menção explícita — não adivinhe).
+3. **Relatório já existente (mode `pdf`, `gupy`, ou reavaliação):** releia o campo `**URL:**` do header do relatório e aplique a regra 1 acima. Não faça prose-matching contra o texto da linha `**PDF:**` de relatórios anteriores — o campo `**URL:**` é a fonte de verdade única e obrigatória em todo relatório (ver Pipeline Integrity), enquanto o texto da linha de PDF pode ter sido escrito antes desta regra existir, editado manualmente, ou (em `modes/{lang}/`) estar em outro idioma.
+
+Se a oferta for identificada como **vaga Gupy**, a regra abaixo é obrigatória, independente do score e independente de o mode estar rodando de forma interativa, semi-autônoma (pipeline) ou headless (batch).
 
 **Por quê:** a Gupy não permite upload de CV/PDF customizado no fluxo padrão — o candidato aplica com o CV já cadastrado na própria plataforma. Gerar um PDF tailorizado para essas vagas é esforço desperdiçado.
 
 **O que fazer:**
-1. **Nunca gerar PDF/HTML tailorizado** para esta oferta, mesmo que o score esteja acima de `auto_pdf_score_threshold`.
+1. **Nunca gerar PDF/HTML tailorizado** para esta oferta, mesmo que o score esteja acima de `auto_pdf_score_threshold`. Isso vale mesmo quando a geração de PDF é uma etapa automática/incondicional de um pipeline maior (ex: `auto-pipeline`'s Step 3) — a checagem Gupy sempre precede e pode cancelar essa etapa, sem exigir confirmação interativa do usuário quando rodando de forma não-interativa (headless/pipeline/batch). Em modo interativo (`/career-ops pdf` chamado diretamente pelo usuário), avisar e pedir confirmação antes de prosseguir é aceitável; em modo automático, apenas pular e registrar a razão.
 2. No header do relatório, usar exatamente esta linha no campo `**PDF:**`:
    `**PDF:** não gerado — processo Gupy (regra de plataforma: sem CV tailorizado em Gupy, foco nas perguntas do processo seletivo)`
-3. No tracker, marcar a coluna PDF como `❌`.
+3. No tracker (`data/applications.md`), marcar a coluna PDF como `❌` — **incondicionalmente**, mesmo em modes cujo passo final normalmente grava `✅` sem checar condição alguma (ex: `auto-pipeline`'s "Update Tracker" step). A checagem Gupy sempre tem precedência sobre qualquer instrução de "gravar ✅" mais abaixo no mesmo mode.
 4. Avisar o usuário no output do chat/resumo que esta é uma vaga Gupy e que PDF não foi gerado por essa razão — **não gerar automaticamente o texto de apresentação nem sugerir habilidades**. Apenas informar que `/career-ops gupy {slug}` está disponível quando o usuário quiser esses artefatos.
 5. Continuar normalmente com o resto da avaliação (blocos A-G, relatório, tracker) — só o PDF é pulado.
 

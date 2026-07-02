@@ -12,6 +12,18 @@ candidate:
   github: "github.com/janesmith"
   twitter: "https://x.com/janesmith"
 
+# Optional: fixed skill lists already registered on your profile with a given
+# ATS. Used by mode `gupy` (modes/gupy.md) to suggest the 3 best-matching
+# skills per job instead of inventing a list — only needed if you apply
+# through Gupy (Brazil's largest ATS) and want that on-demand mode to work.
+# Uncomment and fill in with the exact skill names as they appear on your
+# Gupy profile page ("Habilidades") if you use it; otherwise leave commented.
+# ats_profiles:
+#   gupy:
+#     skills:
+#       - "Example Skill One"
+#       - "Example Skill Two"
+
 target_roles:
   # Your North Star roles — what you're optimizing for
   primary:

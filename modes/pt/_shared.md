@@ -176,6 +176,27 @@ Em vagas e negociações brasileiras, existem termos e práticas que não aparec
 
 ---
 
+## Detecção de Plataforma: Gupy
+
+**Regra permanente — aplica-se automaticamente a qualquer mode desta árvore (`modes/pt/`) que gere ou possa gerar um PDF/CV tailorizado** (`oferta`, `pipeline`, `aplicar`, ou qualquer mode futuro que chame a geração de PDF), sem exigir um "gatilho" separado em cada arquivo.
+
+Gupy é o maior ATS do Brasil e um alvo primário desta árvore de modos (ver `modes/pt/README.md`), então esta regra é especialmente relevante aqui.
+
+**Trigger (nesta ordem — o primeiro sinal disponível decide):**
+1. **URL disponível:** host termina em `.gupy.io` → vaga Gupy.
+2. **Sem URL (JD colada como texto puro):** procure por sinais de Gupy no próprio texto da JD ("Gupy", rodapé "powered by Gupy", instrução de candidatura que referencia a plataforma). Sem sinal encontrado → trate como não-Gupy, não adivinhe.
+3. **Relatório já existente:** releia o campo `**URL:**` do header e aplique a regra 1. Não faça prose-matching contra o texto da linha `**PDF:**`.
+
+Se a oferta for identificada como **vaga Gupy**, a regra abaixo é obrigatória, independente do score:
+
+1. **Nunca gerar PDF/HTML tailorizado** para esta oferta, mesmo acima do threshold configurado. Em modo automático/headless, pular sem pedir confirmação; em modo interativo (usuário pedindo PDF diretamente), avisar e confirmar antes.
+2. No header do relatório, usar exatamente: `**PDF:** não gerado — processo Gupy (regra de plataforma: sem CV tailorizado em Gupy, foco nas perguntas do processo seletivo)`
+3. No tracker, marcar a coluna PDF como `❌` — incondicionalmente, mesmo que a instrução padrão do mode diga para gravar `✅`.
+4. Avisar o usuário que é uma vaga Gupy e que PDF não foi gerado por essa razão. Não gerar automaticamente texto de apresentação nem sugerir habilidades — apenas informar que `/career-ops gupy {slug}` está disponível (mode `modes/gupy.md`, compartilhado entre todas as árvores de idioma).
+5. Continuar normalmente com o resto da avaliação — só o PDF é pulado.
+
+---
+
 ## Regras Globais
 
 ### NUNCA

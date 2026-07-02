@@ -22,12 +22,12 @@ This complements — does not replace — the per-URL liveness gate in `auto-pip
 2. **For each surviving pending URL**:
    a. **Extract JD** using Playwright (browser_navigate + browser_snapshot) → WebFetch → WebSearch
    b. If the URL is not accessible → mark as `- [!]` with a note and continue
-   b.5. **Apply `modes/_shared.md` § Platform Detection: Gupy** — check if the URL host ends in `.gupy.io`. If it does, remember this for the PDF gate below (no PDF regardless of score) and for the end-of-run summary (flag it as Gupy so the candidate knows `/career-ops gupy {slug}` is available).
+   b.5. **Check Gupy status for this URL** (per `modes/_shared.md` § Platform Detection: Gupy's trigger) and remember it — this loop processes multiple URLs without a report per URL yet, so the flag needs to carry forward to the PDF gate below and the end-of-run summary, unlike `oferta.md`'s single-offer flow where the standing rule alone suffices.
    c. **Run Step 0 (Archetype Detection) and Block A/B (Match with CV)** from `modes/oferta.md`, then apply the **Pre-Screen Gate** below. Only claim a `REPORT_NUM` (via `node reserve-report-num.mjs`, released via `--release <num>` after writing) once the gate says to proceed — never reserve a number for an offer that gets screened out.
    d. **If the gate says proceed**: continue the full evaluation — Blocks C-G → Report .md → PDF (if score >= `auto_pdf_score_threshold`) → Tracker. Move the entry: `- [x] #NNN | URL | Company | Role | Score/5 | PDF ✅/❌`.
    e. **If the gate says skip**: handle per the Pre-Screen Gate section below — no report, no report number, no tracker entry.
 
-   **About the PDF gate (configurable):** **Gupy override first (see step 2.b.5 above):** if this offer was flagged as Gupy, skip PDF generation unconditionally — regardless of score — and use the exact Gupy line from `modes/_shared.md` § Platform Detection: Gupy in the report header's `**PDF:**` field. Do not evaluate the score-based gate below for Gupy offers.
+   **About the PDF gate (configurable):** **Gupy override first (see step 2.b.5 above):** if this offer was flagged as Gupy, the score-based gate below never runs — `modes/_shared.md`'s standing rule already governs the header line, tracker column, and skip behavior unconditionally.
 
    **Score-based gate (non-Gupy offers only):** Read `config/profile.yml` → `auto_pdf_score_threshold`. If the key does not exist, default to `3.0` (this mode's original gate). If the evaluation score is less than the threshold, skip PDF generation: write the report normally, show in the header `**PDF:** not generated — run /career-ops pdf {company-slug} to create on demand`, and mark PDF ❌ in the tracker. If the score is ≥ threshold, generate the PDF as usual.
 
